@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>fresh.</title>
+  <style>
+    :root {
+      --primary:#aaffa0;
+      --primary-hover: #B8E788;
+      --bg: #fafafa;
+      --card-bg: #ffffff;
+      --border: #dbdbdb;
+      --text: #262626;
+      --text-muted: #8e8e8e;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      padding-top: 70px;
+      padding-bottom: 40px;
+    }
+
+    /* Top Navigation Bar */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background-color: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 100;
+    }
+
+    .brand {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: var(--primary);
+    }
+
+    .nav-actions button {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-left: 8px;
+    }
+
+    .nav-actions button.secondary {
+      background-color: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    /* Main Feed Layout */
+    .feed-container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 0 10px;
+    }
+
+    /* Instagram-Style Post Card */
+    .post-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+
+    .post-header {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+    }
+
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #eee;
+      margin-right: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #666;
+    }
+
+    .post-header-info {
+      flex: 1;
+    }
+
+    .author-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .remix-tag {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .post-image {
+      width: 100%;
+      height: 350px;
+      object-fit: cover;
+      background-color: #f0f0f0;
+    }
+
+    .post-actions {
+      padding: 10px 16px;
+      display: flex;
+      gap: 16px;
+    }
+
+    .action-btn {
+      background: none;
+      border: none;
+      font-size: 1.1rem;
+      cursor: pointer;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .action-btn.liked {
+      color: var(--primary);
+    }
+
+    .post-body {
+      padding: 0 16px 16px 16px;
+    }
+
+    .post-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .recipe-details {
+      background: #f9f9f9;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      margin-top: 8px;
+    }
+
+    .recipe-details h4 {
+      margin-bottom: 4px;
+      color: #444;
+    }
+
+    /* Modals & Slide-out Drawers */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      width: 90%;
+      max-width: 500px;
+      border-radius: 12px;
+      padding: 24px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+    }
+
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-family: inherit;
+    }
+
+    /* Cook List Side Drawer */
+    .drawer {
+      position: fixed;
+      top: 0; right: -380px;
+      width: 350px;
+      height: 100%;
+      background: var(--card-bg);
+      border-left: 1px solid var(--border);
+      box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+      transition: right 0.3s ease;
+      z-index: 150;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .drawer.open {
+      right: 0;
+    }
+
+    .drawer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+    }
+
+    .list-group {
+      background: #f9f9f9;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 16px;
+    }
+
+    .list-title {
+      font-weight: bold;
+      color: var(--primary);
+      margin-bottom: 8px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 4px;
+    }
+
+    .cook-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      font-size: 0.9rem;
+    }
+    #notice:not(:empty) { position:fixed; bottom:12px; left:5%; width:90%; padding:12px; background:#fff; border:1px solid var(--border); z-index:300; }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <header class="navbar">
+    <div class="brand">fresh.</div>
+    <div class="nav-actions">
+      <span id="userBadge">Not logged in</span>
+      <button class="secondary" id="authButton" onclick="openModal('loginModal')">Log in</button>
+      <button onclick="openModal('createModal')">+ Create Recipe</button>
+      <button class="secondary" onclick="openModal('createListModal')">+ New List</button>
+      <button class="secondary" onclick="toggleDrawer()">👨‍🍳 My Lists</button>
+    </div>
+  </header>
+
+  <div class="feed-container" style="margin-bottom:16px">
+    <label for="recipeSearch">Search recipes</label>
+    <input id="recipeSearch" oninput="loadRecipes()" placeholder="Recipe name">
+    <button onclick="loadRandomRecipe()">Random recipe</button>
+    <p id="notice" role="status" style="margin:12px 0"></p>
+  </div>
+
+
+  <p class="feed-container" style="margin-bottom:16px">Use Log in → Create account to register.
+    All API actions are student exercises. Each has a basic fetch example in section 1 and a TODO function in section 2. The backend is complete.</p>
+  <!-- Feed Area -->
+  <main class="feed-container" id="feed"></main>
+
+  <!-- Create Recipe Modal -->
+  <div class="modal" id="createModal">
+    <div class="modal-content">
+      <h2>Share New Recipe</h2>
+      <form id="createForm" onsubmit="handleCreateRecipe(event)">
+        <div class="form-group">
+          <label>Recipe Title</label>
+          <input type="text" id="createTitle" placeholder="Avocado Toast Supreme" required>
+        </div>
+
+
+        <div class="form-group">
+          <label>Description / instructions</label>
+          <textarea id="createInstructions" rows="3" required></textarea>
+        </div>
+        <button type="submit">Publish Recipe</button>
+        <button type="button" class="secondary" onclick="closeModal('createModal')">Cancel</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Create Cook List Modal -->
+  <div class="modal" id="createListModal">
+    <div class="modal-content">
+      <h2>Create Cook List</h2>
+      <form onsubmit="handleCreateList(event)">
+        <div class="form-group">
+          <label>List Name</label>
+          <input type="text" id="listNameInput" placeholder="e.g. Sunday Meal Prep, Date Night" required>
+        </div>
+        <div class="form-group"><label for="listDescription">Description</label>
+          <textarea id="listDescription" required></textarea></div>
+        <button type="submit">Create List</button>
+        <button type="button" class="secondary" onclick="closeModal('createListModal')">Cancel</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Recipe to Specific List Modal -->
+  <div class="modal" id="addToListModal">
+    <div class="modal-content">
+      <h2>Save to Cook List</h2>
+      <form onsubmit="handleSaveToList(event)">
+        <input type="hidden" id="targetRecipeId">
+        <div class="form-group">
+          <label>Select List</label>
+          <select id="cookListSelect"></select>
+        </div>
+        <button type="submit">Save Recipe</button>
+        <button type="button" class="secondary" onclick="closeModal('addToListModal')">Cancel</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Slide-out Cook Lists Drawer -->
+  <aside class="drawer" id="cookDrawer">
+    <div class="drawer-header">
+      <h3>My Cook Lists</h3>
+      <button class="secondary" onclick="toggleDrawer()">✕</button>
+    </div>
+    <label for="listSearch">Search my lists</label>
+    <input id="listSearch" oninput="loadLists()" placeholder="List name">
+    <div id="cookListsContainer"></div>
+  </aside>
+
+
+  <div class="modal" id="loginModal"><div class="modal-content">
+    <h2>Log in</h2><form onsubmit="handleLogin(event)">
+      <div class="form-group"><label for="loginName">Username</label><input id="loginName" autocomplete="username" required></div>
+      <div class="form-group"><label for="loginPassword">Password</label><input id="loginPassword" type="password" autocomplete="current-password" required></div>
+      <button>Log in</button><button type="button" onclick="closeModal('loginModal');openModal('registerModal')">Create account</button>
+      <button type="button" onclick="closeModal('loginModal')">Cancel</button>
+    </form></div></div>
+  <div class="modal" id="registerModal"><div class="modal-content">
+    <h2>Create account</h2><form onsubmit="handleRegister(event)">
+      <div class="form-group"><label for="registerName">Username</label><input id="registerName" autocomplete="username" required></div>
+      <div class="form-group"><label for="registerPassword">Password</label><input id="registerPassword" type="password" autocomplete="new-password" required></div>
+      <div class="form-group"><label for="registerBio">Bio (optional)</label><textarea id="registerBio"></textarea></div>
+      <button>Register</button><button type="button" onclick="closeModal('registerModal')">Cancel</button>
+    </form></div></div>
+<script>
+// FRONTEND EXERCISES — backend is already complete.
+// Open http://localhost:5555 after starting api2 copy.py.
+const BASE_URL = "http://127.0.0.1:5555";
+let currentUser = null;
+let posts = [];
+let cookLists = [];
+
+// 1. WORKING EXAMPLES — one basic fetch example for every JSON API endpoint.
+// These are code references, not a second set of forms. They send REAL requests.
+// Example console call: await exampleLogin("alice", "practice-password")
+// GET / serves the HTML page itself; it is not a JSON API exercise.
+// Example 1: POST "/register"
+async function exampleRegister(username, password, bio) {
+  try {
+    const response = await fetch(BASE_URL + ("/register"), {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({username: username, password: password, bio: bio})
+    });
+    const data = await response.json();
+    if (response.ok) {
+      console.log(data);
+      return data;
+    } else {
+      alert(data.error || "Please log in first.");
+      return null;
+    }
+  } catch (error) {
+    alert("Could not connect to the server.");
+    return null;
+  }
+}
+
+// Example 2: POST "/login"
+async function exampleLogin(username, password) {
+  try {
+    const response = await fetch(BASE_URL + ("/login"), {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({username: username, password: password})
+    });
+    const data = await response.json();
+    if (response.ok) {
+      console.log(data);
+      return data;
+    } else {
+      alert(data.error || "Please log in first.");
+      return null;
+    }
+  } catch (error) {
+    alert("Could not connect to the server.");
+    return null;
+  }
+}
+
+// Example 3: POST "/logout"
+async function exampleLogout() {
+  try {
+    const response = await fetch(BASE_URL + ("/logout"), {
+      method: "POST",
+      credentials: "include"
+    });
+    const data = await response.json();
+    if (response.ok) {
+      console.log(data);
+      return data;
+    } else {
+      alert(data.error || "Please log in first.");
+      return null;
+    }
+  } catch (error) {
+    alert("Could not connect to the server.");
+    return null;
+  }
+}
+
+// Example 4: GET "/me"
+async function exampleSession() {
+  try {
+    const response = await fetch(BASE_URL + ("/me"), {
+      method: "GET",
+      credentials: "include"
+    });
+    const data = await response.json();
+    if (response.ok) {
+      console.log(data);
+      return data;
+    } else {
+      alert(data.error || "Please log in first.");
+      return null;
+    }
+  } catch (error) {
+    alert("Could not connect to the server.");
+    return null;
+  }
+}
+
+// Example 5: GET "/randomrecipe"
+async function exampleRandomRecipe() {
+  try {
+    const response = await fetch(BASE_URL + ("/randomrecipe"), {
+      method: "GET",
+      credentials: "include"
+    });
+    const data = await response.json();
+    if (response.ok) {
+      console.log(data);
+      return data;
+    } else {
+      alert(data.error || "Please log in first.");
+      return null;
+    }
+  } catch (error) {
+    alert("Could not connect to the server.");
+    return null;
+  }
+}
+
+// Example 6: GET "/recipes/search?name=" + encodeURIComponent(name)
+async function exampleSearchRecipes(name) {
+  try {
+    const response = await fetch(BASE_URL + ("/recipes/search?name=" + encodeURIComponent(name)), {
+      method: "GET",
+      credentials: "include"
+    });
+    const data = await response.json();
+    if (response.ok) {
+      console.log(data);
+      return data;
+    } else {
+      alert(data.error || "Please log in first.");
+      return null;
+    }
+  } catch (error) {
+    alert("Could not connect to the server.");
+    return null;
+  }
+}
+
+// Example 7: POST "/addrecipe"
+async function exampleCreateRecipe(name, description) {
+  try {
+    const response = await fetch(BASE_URL + ("/addrecipe"), {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({name: name, description: description})
+    });
+    const data = await response.json();
+    if (response.ok) {
+      console.log(data);
+      return data;
+    } else {
+      alert(data.error || "Please log in first.");
+      return null;
+    }
+  } catch (error) {
+    alert("Could not connect to the server.");
+    return null;
+  }
+}
+
+// Example 8: DELETE "/deleterecipe"
+async function exampleDeleteRecipe(recipeId) {
+  try {
+    const response = await fetch(BASE_URL + ("/deleterecipe"), {
+      method: "DELETE",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({recipe_id: recipeId})
+    });
+    const data = await response.json();
+    if (response.ok) {
+      console.log(data);
+      return data;
+    } else {
+      alert(data.error || "Please log in first.");
+      return null;
+    }
+  } catch (error) {
+    alert("Could not connect to the server.");
+    return null;
+  }
+}
+
+// Example 9: GET "/cooklists/search?name=" + encodeURIComponent(name)
+async function exampleSearchLists(name) {
+  try {
+    const response = await fetch(BASE_URL + ("/cooklists/search?name=" + encodeURIComponent(name)), {
+      method: "GET",
+      credentials: "include"
+    });
+    const data = await response.json();
+    if (response.ok) {
+      console.log(data);
+      return data;
+    } else {
+      alert(data.error || "Please log in first.");
+      return null;
+    }
+  } catch (error) {
+    alert("Could not connect to the server.");
+    return null;
+  }
+}
+
+// Example 10: POST "/addCooklist"
+async function exampleCreateList(name, description) {
+  try {
+    const response = await fetch(BASE_URL + ("/addCooklist"), {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({name: name, description: description})
+    });
+    const data = await response.json();
+    if (response.ok) {
+      console.log(data);
+      return data;
+    } else {
+      alert(data.error || "Please log in first.");
+      return null;
+    }
+  } catch (error) {
+    alert("Could not connect to the server.");
+    return null;
+  }
+}
+
+// Example 11: DELETE "/deleteCooklist"
+async function exampleDeleteList(listId) {
+  try {
+    const response = await fetch(BASE_URL + ("/deleteCooklist"), {
+      method: "DELETE",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({Cooklist_id: listId})
+    });
+    const data = await response.json();
+    if (response.ok) {
+      console.log(data);
+      return data;
+    } else {
+      alert(data.error || "Please log in first.");
+      return null;
+    }
+  } catch (error) {
+    alert("Could not connect to the server.");
+    return null;
+  }
+}
+
+// Example 12: POST "/addsavedrecipes"
+async function exampleSaveToList(recipeId, listName) {
+  try {
+    const response = await fetch(BASE_URL + ("/addsavedrecipes"), {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({recipe_id: recipeId, cooklist_name: listName})
+    });
+    const data = await response.json();
+    if (response.ok) {
+      console.log(data);
+      return data;
+    } else {
+      alert(data.error || "Please log in first.");
+      return null;
+    }
+  } catch (error) {
+    alert("Could not connect to the server.");
+    return null;
+  }
+}
+
+// Example 13: GET "/cooklists/" + listId + "/recipes"
+async function exampleListRecipes(listId) {
+  try {
+    const response = await fetch(BASE_URL + ("/cooklists/" + listId + "/recipes"), {
+      method: "GET",
+      credentials: "include"
+    });
+    const data = await response.json();
+    if (response.ok) {
+      console.log(data);
+      return data;
+    } else {
+      alert(data.error || "Please log in first.");
+      return null;
+    }
+  } catch (error) {
+    alert("Could not connect to the server.");
+    return null;
+  }
+}
+
+// Example 14: DELETE "/cooklists/" + listId + "/recipes/" + recipeId
+async function exampleRemoveFromList(listId, recipeId) {
+  try {
+    const response = await fetch(BASE_URL + ("/cooklists/" + listId + "/recipes/" + recipeId), {
+      method: "DELETE",
+      credentials: "include"
+    });
+    const data = await response.json();
+    if (response.ok) {
+      console.log(data);
+      return data;
+    } else {
+      alert(data.error || "Please log in first.");
+      return null;
+    }
+  } catch (error) {
+    alert("Could not connect to the server.");
+    return null;
+  }
+}
+
+// 2. STUDENT EXERCISES — called by the real forms and buttons.
+// Use document.getElementById("inputId").value to read a field.
+// Write fetch directly, as in the examples. Always check response.ok.
+// For protected requests, a 401 should resetSession() and ask the user to log in.
+// Catch network failures. Do not update the UI as if a failed request succeeded.
+
+async function handleRegister(event) {
+  event.preventDefault();
+  
+  try {
+    // 1. Get input values
+    const registername = document.getElementById("registerName").value.trim();
+    const registerpassword = document.getElementById("registerPassword").value.trim();
+    const registerbio = document.getElementById("registerBio").value.trim();
+
+    // 2. Validate inputs
+    if (!registername) {
+      alert("Name cannot be empty.");
+      return null;
+    }
+    if (!registerpassword) {
+      alert("Password cannot be empty.");
+      return null;
+    } 
+
+    // 3. Send the POST request
+    const response = await fetch(BASE_URL + "/register", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username: registername, password: registerpassword, bio: registerbio })
+    });
+    
+    const data = await response.json();
+    
+    if (response.ok) {
+      console.log(data);
+      // Optional from Exercise instructions: clear password, switch modals
+      document.getElementById("registerPassword").value = "";
+      return data;
+    } else {
+      // Handles duplicate username (409) or other server-side errors returned in JSON
+      alert(data.error || "Please log in first");
+      return null;
+    } 
+  } catch (error) {
+    // This will now correctly catch actual network connection drops or fetch failures
+    console.error(error);
+    alert("Could not connect to the server");
+    return null;
+  }
+}
+async function handleLogin(event) {
+  event.preventDefault();
+  // Exercise 2: study exampleLogin() above.
+  // TODO: Read loginName/loginPassword. POST credentials. On success setUser(data), close
+  // TODO: loginModal, clear the password, then loadRecipes() and loadLists(). Wrong credentials
+  // TODO: return 401.
+  try {
+    // 1. Get input values
+    const loginname = document.getElementById("loginName").value.trim();
+    const loginpassword = document.getElementById("loginPassword").value.trim();
+
+    // 2. Validate inputs
+    if (!loginname) {
+      alert("Name cannot be empty.");
+      return null;
+    }
+    if (!loginpassword) {
+      alert("Password cannot be empty.");
+      return null;
+    }
+
+
+    const response = await fetch(BASE_URL + ("/login"), {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({username: loginname, password: loginpassword})
+    });
+    const data = await response.json();
+    if (response.ok) {
+      console.log(data);
+      document.getElementById("loginPassword").value = "";
+      alert("Login Successful!");
+      setUser(data);
+      closeModal('loginModal')
+      loadRecipes();
+      return data;
+    } else {
+      alert(data.error || "Server Error.");
+      return data;
+    }
+  } catch (error) {
+    alert("Could not connect to the server.");
+    return null;
+  }
+} 
+
+
+
+
+async function handleLogout() {
+  // Exercise 3: study exampleLogout() above.
+  // TODO: POST /logout. Only after success call resetSession(), close open modals and the drawer.
+  // TODO: Display errors instead of pretending logout succeeded.
+  try{
+    const response = await fetch(BASE_URL + ("/logout"), {
+    method: "POST",
+    credentials: "include" });
+    const data = await response.json();
+    if (response.ok) {
+      console.log(data);
+      alert("Log out Successful!")
+      resetSession()
+      return data;
+    } else {
+      return null
+    }
+  } catch (error) {
+    alert("Could not connect to server");
+    return null;
+  }
+
+  ;
+}
+
+async function checkSession() {
+  
+  // Exercise 4: study exampleSession() above.
+  // TODO: GET /me on page load. If logged_in, setUser(data), then loadRecipes() and loadLists(). A
+  // TODO: 401 means logged out: resetSession(). Handle other errors.
+  try {
+    const response = await fetch(BASE_URL + ("/me"), {
+      method: "GET",
+      credentials: "include"
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+      console.log(data);
+      setUser(data)
+      loadRecipes()
+      loadLists()
+      return data;
+    } else {
+      resetSession();
+      return null;
+    }
+
+  } catch (error) {
+    alert("Could not connect to the server.");
+    return null;
+  }
+}
+
+
+async function loadRandomRecipe() {
+  // Exercise 5: study exampleRandomRecipe() above.
+  // TODO: GET /randomrecipe. Display data.Name and data.Description using notify(). Handle 404
+  // TODO: when there are no recipes.
+  try {
+    const response = await fetch(BASE_URL + ("/randomrecipe"), {
+      method: "GET",
+      credentials: "include"
+    });
+    const data = await response.json();
+    if (response.ok) {
+      console.log(data);
+      notify("Name " + (data.Name) + " Description " + (data.Description));
+      return data;
+    } else {
+      alert(data.error || "Please log in first.");
+      return null;
+    }
+
+  } catch (error) {
+    alert("Could not connect to the server.");
+    return null;
+  }
+}
+
+async function loadRecipes() {
+  // Exercise 6: study exampleSearchRecipes() above.
+  // TODO: Read recipeSearch. GET the search URL using encodeURIComponent(). On success assign
+  // TODO: posts = data and call renderFeed(). Empty search returns all recipes.
+  try {
+    searchquery = document.getElementById("recipeSearch").value.trim()
+
+    const response = await fetch(BASE_URL + ("/recipes/search?name=" + encodeURIComponent(searchquery)), {
+      method: "GET",
+      credentials: "include"
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+      console.log(data);
+      posts = data
+      renderFeed()
+      console.log("reloaded")
+      return data;
+    } else {
+      alert(data.error || "Please log in first.");
+      return null;
+    }
+
+  } catch (error) {
+    alert("Could not connect to the server.");
+    console.log(error)
+    return null;
+  }
+
+  notify("Exercise 6: complete loadRecipes().");
+}
+
+async function handleCreateRecipe(event) {
+  event.preventDefault();
+  // Exercise 7: study exampleCreateRecipe() above.
+  // TODO: Read createTitle/createInstructions. POST {name, description}. On success close
+  // TODO: createModal, reset createForm and call loadRecipes().
+  createname = document.getElementById("createTitle").value.trim()
+  createdesc = document.getElementById("createInstructions").value.trim()
+
+
+  try {
+    const response = await fetch(BASE_URL + ("/addrecipe"), {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({name: createname, description: createdesc})
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+      console.log(data);
+      document.getElementById("createTitle").value = ""
+      document.getElementById("createInstructions").value = ""
+      closeModal('createModal')
+    } else {
+      alert(data.error || "Please log in first.");
+      return null;
+    }
+
+  } catch (error) {
+    alert("Could not connect to the server.");
+    return null;
+  }
+
+}
+
+async function deleteRecipe(recipe_id) {
+  // Exercise 8: study exampleDeleteRecipe() above.
+  // TODO: Ask confirm() before deletion. DELETE with JSON {recipe_id: recipe_id}. On success
+  // TODO: reload recipes and lists. Handle 404 and 401.
+  try {
+    confirmi = confirm("Are you sure you want to delete this?")
+    if (confirmi == true) {
+      console.log(confirmi)
+      const response = await fetch(BASE_URL + ("/deleterecipe"), {
+        method: "DELETE",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({recipe_id: recipe_id})
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        console.log(data);
+        alert("Delete Success")
+        return data;
+      } else {
+        alert(data.error || "Please log in first.");
+        return null;
+      }
+    } else {
+        console.log(confirmi)
+        return null;
+    }
+  } catch (error) {
+    alert("Could not connect to the server.");
+    return null;
+  }
+
+  notify("Exercise 8: complete deleteRecipe().");
+}
+
+
+
+async function loadLists() {
+  // Exercise 9: study exampleSearchLists() above.
+  // TODO: Read listSearch. GET matching cook lists. For each row, await
+  // TODO: loadListRecipes(row.cooklist_id); if successful assign row.recipes. Assign cookLists and
+  // TODO: call renderDrawerLists(). Use a simple for loop. Stop on errors.
+  try {
+    cooklistname = document.getElementById("listSearch").value.trim()
+    const response = await fetch(BASE_URL + ("/cooklists/search?name=" + encodeURIComponent(cooklistname)), {
+      method: "GET",
+      credentials: "include"
+    }); 
+
+    const data = await response.json();
+    if (response.ok) {
+      console.log(data);
+        for (const row of data) {
+        const recipes = await loadListRecipes(row.cooklist_id);
+        if (recipes === null) return null; // stop on errors
+        row.recipes = recipes;
+      }
+      cookLists = data;
+      renderDrawerLists();
+      return data;
+    } else {
+      alert(data.error || "Please log in first.");
+      return null;
+    }
+
+  } catch (error) {
+    alert("Could not connect to the server.");
+    console.log(error)
+    return null;
+  }
+
+  notify("Exercise 9: complete loadLists().");
+}
+
+async function handleCreateList(event) {
+  event.preventDefault();
+  // Exercise 10: study exampleCreateList() above.
+  // TODO: Read listNameInput/listDescription. POST {name, description}. On success clear inputs,
+  // TODO: close createListModal and call loadLists(). Handle duplicate names (409).
+    clistname = document.getElementById("listNameInput").value.trim()
+    clistdescription = document.getElementById("listDescription").value.trim()
+
+  try {
+    const response = await fetch(BASE_URL + ("/addCooklist"), {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({name: clistname, description: clistdescription})
+    });
+    const data = await response.json();
+    if (response.ok) {
+      console.log(data);
+      closeModal("createListModal")
+      loadLists();
+      return data;
+    } else {
+      alert(data.error || "Please log in first.");
+      return null;
+    }
+  } catch (error) {
+    alert("Could not connect to the server.");
+    return null;
+  }
+  notify("Exercise 10: complete handleCreateList().");
+}
+
+async function deleteList(Cooklist_id) {
+  // Exercise 11: study exampleDeleteList() above.
+  // TODO: Ask confirm(). DELETE with JSON {Cooklist_id: Cooklist_id}; capitalization matters. On
+  // TODO: success loadLists(). Original recipes must remain.
+  if (confirm("Are you sure you want to delete this Cooklist?") == true) {
+    try {
+      const response = await fetch(BASE_URL + ("/deleteCooklist"), {
+        method: "DELETE",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({Cooklist_id: Cooklist_id})
+      });
+      const data = await response.json();
+      if (response.ok) {
+        console.log(data);
+        alert("Succesfully deleted the List!");
+        loadLists();
+        return data;
+      } else {
+        alert(data.error || "Please log in first.");
+        return null;
+      }
+    } catch (error) {
+      alert("Could not connect to the server.");
+      return null;
+    }
+  }
+  notify("Exercise 11: complete deleteList().");
+}
+
+async function handleSaveToList(event) {
+  event.preventDefault();
+  // Exercise 12: study exampleSaveToList() above.
+  // TODO: Read targetRecipeId as Number(...) and cookListSelect as text. POST {recipe_id,
+  // TODO: cooklist_name}. On success close addToListModal and call loadLists(). Handle missing
+  // TODO: recipe/list (404).
+  recipeId1 = Number(document.getElementById("targetRecipeId").value)
+  listname1 = document.getElementById("cookListSelect").value.trim()
+  console.log(recipeId1, listname1)
+  try {
+    const response = await fetch(BASE_URL + ("/addsavedrecipes"), {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({recipe_id: recipeId1, cooklist_name: listname1})
+    });
+    const data = await response.json();
+    if (response.ok) {
+      console.log(data);
+      closeModal("addToListModal")
+      loadLists()
+      return data;
+    } else {
+      alert(data.error || "Please log in first.");
+      return null;
+    }
+  } catch (error) {
+    alert("Could not connect to the server.");
+    return null;
+  }
+
+  notify("Exercise 12: complete handleSaveToList().");
+}
+
+async function loadListRecipes(listId) {
+  // Exercise 13: study exampleListRecipes() above.
+  // TODO: GET the recipes saved in this cook list. Return the JSON array on success (including
+  // TODO: []). Return null on errors; loadLists() must check for null before rendering.
+ // Replace with the fetched array when implemented.
+  try {
+    const response = await fetch(BASE_URL + ("/cooklists/" + listId + "/recipes"), {
+      method: "GET",
+      credentials: "include"
+    });
+    const data = await response.json();
+    if (response.ok) {
+      console.log(data);
+      return data;
+    } else {
+      alert(data.error || "Please log in first.");
+      return null;
+    }
+  } catch (error) {
+    alert("Could not connect to the server.");
+    return null;
+  }
+}
+
+async function removeFromList(listId, recipeId) {
+  // Exercise 14: study exampleRemoveFromList() above.
+  // TODO: DELETE this URL; no request body. On success call loadLists(). This unlinks the recipe
+  // TODO: without deleting it. Handle missing link (404).
+  try {
+    const response = await fetch(BASE_URL + ("/cooklists/" + listId + "/recipes/" + recipeId), {
+      method: "DELETE",
+      credentials: "include"
+    });
+    const data = await response.json();
+    if (response.ok) {
+      console.log(data);
+      loadLists()
+      return data;
+    } else {
+      alert(data.error || "Please log in first.");
+      return null;
+    }
+  } catch (error) {
+    alert("Could not connect to the server.");
+    return null;
+  }
+}
+
+
+// 3. PROVIDED UI HELPERS — rendering and dialogs only; no API calls.
+function notify(message) { document.getElementById('notice').textContent = message; }
+function resetSession() {
+  currentUser = null; posts = []; cookLists = []; 
+  document.getElementById('userBadge').textContent = 'Not logged in';
+  document.getElementById('authButton').textContent = 'Log in';
+  document.getElementById('authButton').onclick = () => openModal('loginModal');
+  document.getElementById('feed').textContent = 'Log in to view recipes.';
+  document.getElementById('cookListsContainer').textContent = 'Log in to view your cook lists.';
+}
+function setUser(data) {
+  currentUser = data; 
+  document.getElementById('userBadge').textContent = data.username;
+  document.getElementById('authButton').textContent = 'Log out'; document.getElementById('authButton').onclick = handleLogout;
+}
+
+
+
+
+function button(parent,label,handler) {
+  const b=document.createElement('button'); b.className='action-btn'; b.textContent=label; b.onclick=handler; parent.appendChild(b);
+}
+function text(parent,tag,value,className='') {
+  const node=document.createElement(tag); node.className=className; node.textContent=value; parent.appendChild(node); return node;
+}
+function renderFeed() {
+  const feed=document.getElementById('feed'); feed.replaceChildren();
+  if (!posts.length) { feed.textContent='No recipes found. Create one or change the search.'; return; }
+  for (const post of posts) {
+    const card=document.createElement('article'); card.className='post-card';
+    const body=text(card,'div','','post-body');
+    text(body,'h2',post.name,'post-title'); text(body,'small',`Recipe ID: ${post.recipe_id}`); text(body,'p',post.description,'recipe-details');
+    const actions=text(card,'div','','post-actions');
+    button(actions,'Add to List',()=>openAddToListModal(post.recipe_id));
+    if (Number(post.user_id)===Number(currentUser.user_id)) button(actions,'Delete',()=>deleteRecipe(post.recipe_id));
+    feed.appendChild(card);
+  }
+}
+function renderDrawerLists() {
+  const container=document.getElementById('cookListsContainer'); container.replaceChildren();
+  if (!cookLists.length) { container.textContent='No cook lists found.'; return; }
+  for (const list of cookLists) {
+    const group=text(container,'div','','list-group'); text(group,'h3',list.name,'list-title'); text(group,'p',list.description);
+    button(group,'Delete list',()=>deleteList(list.cooklist_id));
+    if (!list.recipes.length) text(group,'p','No saved recipes.');
+    for (const recipe of list.recipes) {
+      const item=text(group,'div','','cook-item'); text(item,'span',recipe.name);
+      button(item,'Remove',()=>removeFromList(list.cooklist_id,recipe.recipe_id));
+    }
+  }
+}
+
+function openModal(id) {
+  if (!currentUser && !['loginModal','registerModal'].includes(id)) id='loginModal';
+  document.getElementById(id).style.display='flex';
+}
+function closeModal(id) { document.getElementById(id).style.display='none'; }
+function toggleDrawer() {
+  if (!currentUser) return openModal('loginModal');
+  document.getElementById('cookDrawer').classList.toggle('open'); loadLists();
+}
+document.querySelectorAll('.modal').forEach(modal=>modal.addEventListener('click',event=>{if(event.target===modal)modal.style.display='none';}));
+window.addEventListener('DOMContentLoaded',checkSession);
+
+// Uses cached lists, so this UI helper does not hide another API exercise.
+function openAddToListModal(recipeId) {
+  if (!currentUser) { openModal('loginModal'); return; }
+  if (cookLists.length === 0) { notify('Create or load a cook list first. Clear the list search to see all lists.'); return; }
+  document.getElementById('targetRecipeId').value = recipeId;
+  const select = document.getElementById('cookListSelect');
+  select.replaceChildren();
+  for (let i = 0; i < cookLists.length; i++) {
+    const option = document.createElement('option');
+    option.value = cookLists[i].name;
+    option.textContent = cookLists[i].name;
+    select.appendChild(option);
+  }
+  openModal('addToListModal');
+}
+</script>
+</body>
+</html>

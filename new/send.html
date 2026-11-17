@@ -1,0 +1,44 @@
+async function handleRegister(event) {
+  event.preventDefault();
+  try {
+    // Get input values
+    const registername = document.getElementById("registerName").value.trim();
+    const registerpassword = document.getElementById("registerPassword").value.trim();
+    const registerbio = document.getElementById("registerBio").value.trim();
+    // Validate inputs
+  if (!registername) {
+    throw new Error("Name cannot be empty.");
+                }
+  if (!registerpassword) {
+      throw new Error("Password cannot be empty.");
+  } 
+  } catch (error){
+    alert("Error: Could not read values")
+  }
+  try {
+    const response = await fetch(BASE_URL + ("/register"),{
+      method: "POST",
+      credentials:"include",
+      headers:{"Content-Type":"application/json" },
+      body: JSON.stringify({username: registername, password: registerpassword, bio: registerbio})
+    });
+    const data = await response.json();
+    if (response.ok) {
+      console.log(data);
+      return data;
+      } else {
+        alert(data.error || "Please log in first");
+        return null;
+      } 
+    } catch (error) {
+        alert("Could not connect to the server")
+        return null;
+  }
+
+  // Exercise 1: study exampleRegister() above.
+  // TODO: Read registerName/registerPassword/registerBio. Validate nonempty credentials. POST the
+  // TODO: JSON. On success clear the password, close registerModal and open loginModal. Handle
+  // TODO: duplicate username (409).
+  notify("Exercise 1: complete handleRegister().");
+
+}

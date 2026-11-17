@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>fresh.</title>
+  <style>
+    :root {
+      --primary: #ff4757;
+      --primary-hover: #e84118;
+      --bg: #fafafa;
+      --card-bg: #ffffff;
+      --border: #dbdbdb;
+      --text: #262626;
+      --text-muted: #8e8e8e;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      padding-top: 70px;
+      padding-bottom: 40px;
+    }
+
+    /* Top Navigation Bar */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background-color: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 100;
+    }
+
+    .brand {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: var(--primary);
+    }
+
+    .nav-actions button {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+
+    .nav-actions button.secondary {
+      background-color: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    /* Main Feed Layout */
+    .feed-container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 0 10px;
+    }
+
+    /* Instagram-Style Post Card */
+    .post-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+
+    .post-header {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+    }
+
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #eee;
+      margin-right: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #666;
+    }
+
+    .post-header-info {
+      flex: 1;
+    }
+
+    .author-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .remix-tag {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .post-image {
+      width: 100%;
+      height: 350px;
+      object-fit: cover;
+      background-color: #f0f0f0;
+    }
+
+    .post-actions {
+      padding: 10px 16px;
+      display: flex;
+      gap: 16px;
+    }
+
+    .action-btn {
+      background: none;
+      border: none;
+      font-size: 1.3rem;
+      cursor: pointer;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .action-btn.liked {
+      color: var(--primary);
+    }
+
+    .post-body {
+      padding: 0 16px 16px 16px;
+    }
+
+    .post-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .recipe-details {
+      background: #f9f9f9;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      margin-top: 8px;
+    }
+
+    .recipe-details h4 {
+      margin-bottom: 4px;
+      color: #444;
+    }
+
+    /* Modals & Slide-out Drawers */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      width: 90%;
+      max-width: 500px;
+      border-radius: 12px;
+      padding: 24px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+    }
+
+    .form-group input, .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-family: inherit;
+    }
+
+    /* Cook List Side Drawer */
+    .drawer {
+      position: fixed;
+      top: 0; right: -350px;
+      width: 320px;
+      height: 100%;
+      background: var(--card-bg);
+      border-left: 1px solid var(--border);
+      box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+      transition: right 0.3s ease;
+      z-index: 150;
+      padding: 20px;
+    }
+
+    .drawer.open {
+      right: 0;
+    }
+
+    .drawer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+    }
+
+    .cook-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      background: #f9f9f9;
+      border-radius: 6px;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <header class="navbar">
+    <div class="brand">DishGram</div>
+    <div class="nav-actions">
+      <button onclick="openModal('createModal')">+ Create Recipe</button>
+      <button class="secondary" onclick="toggleDrawer()">👨‍🍳 Cook List (<span id="cookCount">0</span>)</button>
+    </div>
+  </header>
+
+  <!-- Feed Area -->
+  <main class="feed-container" id="feed"></main>
+
+  <!-- Create Recipe Modal -->
+  <div class="modal" id="createModal">
+    <div class="modal-content">
+      <h2>Share New Recipe</h2>
+      <form id="createForm" onsubmit="handleCreateRecipe(event)">
+        <div class="form-group">
+          <label>Recipe Title</label>
+          <input type="text" id="createTitle" placeholder="Avocado Toast Supreme" required>
+        </div>
+        <div class="form-group">
+          <label>Image URL</label>
+          <input type="url" id="createImage" placeholder="https://images.unsplash.com/..." required>
+        </div>
+        <div class="form-group">
+          <label>Ingredients (comma separated)</label>
+          <input type="text" id="createIngredients" placeholder="Sourdough, Avocado, Chili Flakes" required>
+        </div>
+        <div class="form-group">
+          <label>Instructions</label>
+          <textarea id="createInstructions" rows="3" required></textarea>
+        </div>
+        <button type="submit">Publish Recipe</button>
+        <button type="button" class="secondary" onclick="closeModal('createModal')">Cancel</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Remix Modal -->
+  <div class="modal" id="remixModal">
+    <div class="modal-content">
+      <h2 id="remixHeaderTitle">Remix Recipe</h2>
+      <form id="remixForm" onsubmit="handleSaveRemix(event)">
+        <input type="hidden" id="parentRecipeId">
+        <div class="form-group">
+          <label>Remix Title</label>
+          <input type="text" id="remixTitle" required>
+        </div>
+        <div class="form-group">
+          <label>New Image URL</label>
+          <input type="url" id="remixImage" required>
+        </div>
+        <div class="form-group">
+          <label>Modify Ingredients</label>
+          <input type="text" id="remixIngredients" required>
+        </div>
+        <div class="form-group">
+          <label>Modify Instructions</label>
+          <textarea id="remixInstructions" rows="3" required></textarea>
+        </div>
+        <button type="submit">Publish Remix</button>
+        <button type="button" class="secondary" onclick="closeModal('remixModal')">Cancel</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Slide-out Cook List -->
+  <aside class="drawer" id="cookDrawer">
+    <div class="drawer-header">
+      <h3>My Cook List</h3>
+      <button class="secondary" onclick="toggleDrawer()">✕</button>
+    </div>
+    <div id="cookListItems"></div>
+  </aside>
+
+  <script>
+    // State
+    let posts = [
+      {
+        id: 1,
+        author: "Chef_Elena",
+        title: "Truffle Ramen",
+        image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=600&q=80",
+        ingredients: "Ramen noodles, Truffle oil, Soft-boiled egg, Green onion, Broth",
+        instructions: "Cook noodles in broth. Top with egg, scallions, and drizzle truffle oil before serving.",
+        likes: 124,
+        isLiked: false,
+        isRemix: false,
+        parentAuthor: null
+      }
+    ];
+
+    let cookList = [];
+
+    // Render Feed Posts
+    function renderFeed() {
+      const feed = document.getElementById('feed');
+      feed.innerHTML = '';
+
+      posts.forEach(post => {
+        const postEl = document.createElement('article');
+        postEl.className = 'post-card';
+        postEl.innerHTML = `
+          <div class="post-header">
+            <div class="avatar">${post.author.charAt(0)}</div>
+            <div class="post-header-info">
+              <div class="author-name">${post.author}</div>
+              ${post.isRemix ? `<div class="remix-tag">🔄 Remixed from <strong>@${post.parentAuthor}</strong></div>` : ''}
+            </div>
+          </div>
+          <img src="${post.image}" alt="${post.title}" class="post-image">
+          <div class="post-actions">
+            <button class="action-btn ${post.isLiked ? 'liked' : ''}" onclick="toggleLike(${post.id})">
+              ${post.isLiked ? '❤️' : '🤍'} ${post.likes}
+            </button>
+            <button class="action-btn" onclick="openRemixModal(${post.id})">🔄 Remix</button>
+            <button class="action-btn" onclick="addToCookList(${post.id})">🔖 Save to Cook</button>
+          </div>
+          <div class="post-body">
+            <div class="post-title">${post.title}</div>
+            <div class="recipe-details">
+              <h4>Ingredients:</h4>
+              <p>${post.ingredients}</p>
+              <h4 style="margin-top: 8px;">Instructions:</h4>
+              <p>${post.instructions}</p>
+            </div>
+          </div>
+        `;
+        feed.appendChild(postEl);
+      });
+    }
+
+    // Likes
+    function toggleLike(id) {
+      const post = posts.find(p => p.id === id);
+      if (post) {
+        post.isLiked = !post.isLiked;
+        post.likes += post.isLiked ? 1 : -1;
+        renderFeed();
+      }
+    }
+
+    // Create Base Recipe
+    function handleCreateRecipe(e) {
+      e.preventDefault();
+      const newPost = {
+        id: Date.now(),
+        author: "You",
+        title: document.getElementById('createTitle').value,
+        image: document.getElementById('createImage').value,
+        ingredients: document.getElementById('createIngredients').value,
+        instructions: document.getElementById('createInstructions').value,
+        likes: 0,
+        isLiked: false,
+        isRemix: false,
+        parentAuthor: null
+      };
+
+      posts.unshift(newPost);
+      renderFeed();
+      closeModal('createModal');
+      document.getElementById('createForm').reset();
+    }
+
+    // Open Remix Modal
+    function openRemixModal(id) {
+      const parent = posts.find(p => p.id === id);
+      if (!parent) return;
+
+      document.getElementById('parentRecipeId').value = parent.id;
+      document.getElementById('remixHeaderTitle').innerText = `Remixing ${parent.title}`;
+      document.getElementById('remixTitle').value = `${parent.title} (My Twist)`;
+      document.getElementById('remixImage').value = parent.image;
+      document.getElementById('remixIngredients').value = parent.ingredients;
+      document.getElementById('remixInstructions').value = parent.instructions;
+
+      openModal('remixModal');
+    }
+
+    // Save Remix Post
+    function handleSaveRemix(e) {
+      e.preventDefault();
+      const parentId = parseInt(document.getElementById('parentRecipeId').value);
+      const parent = posts.find(p => p.id === parentId);
+
+      const remixedPost = {
+        id: Date.now(),
+        author: "You",
+        title: document.getElementById('remixTitle').value,
+        image: document.getElementById('remixImage').value,
+        ingredients: document.getElementById('remixIngredients').value,
+        instructions: document.getElementById('remixInstructions').value,
+        likes: 0,
+        isLiked: false,
+        isRemix: true,
+        parentAuthor: parent ? parent.author : 'Original'
+      };
+
+      posts.unshift(remixedPost);
+      renderFeed();
+      closeModal('remixModal');
+    }
+
+    // Cook List Drawer Functions
+    function addToCookList(id) {
+      const post = posts.find(p => p.id === id);
+      if (post && !cookList.some(item => item.id === id)) {
+        cookList.push(post);
+        updateCookListUI();
+      }
+    }
+
+    function removeFromCookList(id) {
+      cookList = cookList.filter(item => item.id !== id);
+      updateCookListUI();
+    }
+
+    function updateCookListUI() {
+      document.getElementById('cookCount').innerText = cookList.length;
+      const listContainer = document.getElementById('cookListItems');
+      
+      if (cookList.length === 0) {
+        listContainer.innerHTML = '<p style="color: var(--text-muted); font-size: 0.9rem;">No recipes saved yet.</p>';
+        return;
+      }
+
+      listContainer.innerHTML = '';
+      cookList.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'cook-item';
+        div.innerHTML = `
+          <div>
+            <strong>${item.title}</strong>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">by ${item.author}</div>
+          </div>
+          <button class="action-btn" onclick="removeFromCookList(${item.id})">🗑️</button>
+        `;
+        listContainer.appendChild(div);
+      });
+    }
+
+    // Helpers
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    function toggleDrawer() { document.getElementById('cookDrawer').classList.toggle('open'); }
+
+    // Initial setup
+    renderFeed();
+  </script>
+</body>
+</html>

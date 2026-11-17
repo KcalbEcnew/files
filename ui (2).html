@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>fresh.</title>
+  <style>
+    :root {
+      --primary:#aaffa0;
+      --primary-hover: #B8E788;
+      --bg: #fafafa;
+      --card-bg: #ffffff;
+      --border: #dbdbdb;
+      --text: #262626;
+      --text-muted: #8e8e8e;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      padding-top: 70px;
+      padding-bottom: 40px;
+    }
+
+    /* Top Navigation Bar */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background-color: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 100;
+    }
+
+    .brand {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: var(--primary);
+    }
+
+    .nav-actions button {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-left: 8px;
+    }
+
+    .nav-actions button.secondary {
+      background-color: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    /* Main Feed Layout */
+    .feed-container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 0 10px;
+    }
+
+    /* Instagram-Style Post Card */
+    .post-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+
+    .post-header {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+    }
+
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #eee;
+      margin-right: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #666;
+    }
+
+    .post-header-info {
+      flex: 1;
+    }
+
+    .author-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .remix-tag {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .post-image {
+      width: 100%;
+      height: 350px;
+      object-fit: cover;
+      background-color: #f0f0f0;
+    }
+
+    .post-actions {
+      padding: 10px 16px;
+      display: flex;
+      gap: 16px;
+    }
+
+    .action-btn {
+      background: none;
+      border: none;
+      font-size: 1.1rem;
+      cursor: pointer;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .action-btn.liked {
+      color: var(--primary);
+    }
+
+    .post-body {
+      padding: 0 16px 16px 16px;
+    }
+
+    .post-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .recipe-details {
+      background: #f9f9f9;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      margin-top: 8px;
+    }
+
+    .recipe-details h4 {
+      margin-bottom: 4px;
+      color: #444;
+    }
+
+    /* Modals & Slide-out Drawers */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      width: 90%;
+      max-width: 500px;
+      border-radius: 12px;
+      padding: 24px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+    }
+
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-family: inherit;
+    }
+
+    /* Cook List Side Drawer */
+    .drawer {
+      position: fixed;
+      top: 0; right: -380px;
+      width: 350px;
+      height: 100%;
+      background: var(--card-bg);
+      border-left: 1px solid var(--border);
+      box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+      transition: right 0.3s ease;
+      z-index: 150;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .drawer.open {
+      right: 0;
+    }
+
+    .drawer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+    }
+
+    .list-group {
+      background: #f9f9f9;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 16px;
+    }
+
+    .list-title {
+      font-weight: bold;
+      color: var(--primary);
+      margin-bottom: 8px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 4px;
+    }
+
+    .cook-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      font-size: 0.9rem;
+    }
+    #notice:not(:empty) { position:fixed; bottom:12px; left:5%; width:90%; padding:12px; background:#fff; border:1px solid var(--border); z-index:300; }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <header class="navbar">
+    <div class="brand">fresh.</div>
+    <div class="nav-actions">
+      <span id="userBadge">Not logged in</span>
+      <button class="secondary" id="authButton" onclick="openModal('loginModal')">Log in</button>
+      <button onclick="openModal('createModal')">+ Create Recipe</button>
+      <button class="secondary" onclick="openModal('createListModal')">+ New List</button>
+      <button class="secondary" onclick="toggleDrawer()">👨‍🍳 My Lists</button>
+    </div>
+  </header>
+
+  <div class="feed-container" style="margin-bottom:16px">
+    <label for="recipeSearch">Search recipes</label>
+    <input id="recipeSearch" oninput="loadRecipes()" placeholder="Recipe name">
+    <button onclick="loadRandomRecipe()">Random recipe</button>
+    <p id="notice" role="status" style="margin:12px 0"></p>
+  </div>
+
+  <details class="feed-container" style="margin-bottom:20px">
+    <summary>Frontend practice: working examples and your exercises</summary>
+    <p>The backend is complete. Edit only the five student functions in this HTML:
+      handleRegister, handleLogin, handleLogout, checkSession and handleSaveToList.
+      Code order: examples → exercises → existing implementations.</p>
+    <p>These working examples use real accounts and the same session as the app.
+      Use a practice account. Logging in here lets you try the provided recipe/list features.</p>
+    <div class="form-group"><label for="practiceName">Practice username</label><input id="practiceName" autocomplete="off"></div>
+    <div class="form-group"><label for="practicePassword">Practice password</label><input id="practicePassword" type="password" autocomplete="off"></div>
+    <div class="form-group"><label for="practiceBio">Bio (optional)</label><input id="practiceBio"></div>
+    <button onclick="exampleRegister(event)">Example register</button>
+    <button onclick="exampleLogin(event)">Example login</button>
+    <button onclick="exampleSession()">Example session check</button>
+    <button onclick="exampleLogout()">Example logout</button>
+    <p>After example login, create a recipe and a cook list with the provided app controls.
+      Enter the recipe ID shown on its card and the exact cook-list name below.</p>
+    <div class="form-group"><label for="practiceRecipe">Recipe ID</label><input id="practiceRecipe" type="number" min="1"></div>
+    <div class="form-group"><label for="practiceList">Cook-list name</label><input id="practiceList"></div>
+    <button onclick="exampleSaveToList(event)">Example save to list</button>
+    <p>Try duplicate registration, incorrect passwords, checking the session after refresh,
+      saving twice, and saving after logout. Then implement the matching student functions.</p>
+  </details>
+
+  <!-- Feed Area -->
+  <main class="feed-container" id="feed"></main>
+
+  <!-- Create Recipe Modal -->
+  <div class="modal" id="createModal">
+    <div class="modal-content">
+      <h2>Share New Recipe</h2>
+      <form id="createForm" onsubmit="handleCreateRecipe(event)">
+        <div class="form-group">
+          <label>Recipe Title</label>
+          <input type="text" id="createTitle" placeholder="Avocado Toast Supreme" required>
+        </div>
+
+
+        <div class="form-group">
+          <label>Description / instructions</label>
+          <textarea id="createInstructions" rows="3" required></textarea>
+        </div>
+        <button type="submit">Publish Recipe</button>
+        <button type="button" class="secondary" onclick="closeModal('createModal')">Cancel</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Create Cook List Modal -->
+  <div class="modal" id="createListModal">
+    <div class="modal-content">
+      <h2>Create Cook List</h2>
+      <form onsubmit="handleCreateList(event)">
+        <div class="form-group">
+          <label>List Name</label>
+          <input type="text" id="listNameInput" placeholder="e.g. Sunday Meal Prep, Date Night" required>
+        </div>
+        <div class="form-group"><label for="listDescription">Description</label>
+          <textarea id="listDescription" required></textarea></div>
+        <button type="submit">Create List</button>
+        <button type="button" class="secondary" onclick="closeModal('createListModal')">Cancel</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Recipe to Specific List Modal -->
+  <div class="modal" id="addToListModal">
+    <div class="modal-content">
+      <h2>Save to Cook List</h2>
+      <form onsubmit="handleSaveToList(event)">
+        <input type="hidden" id="targetRecipeId">
+        <div class="form-group">
+          <label>Select List</label>
+          <select id="cookListSelect"></select>
+        </div>
+        <button type="submit">Save Recipe</button>
+        <button type="button" class="secondary" onclick="closeModal('addToListModal')">Cancel</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Slide-out Cook Lists Drawer -->
+  <aside class="drawer" id="cookDrawer">
+    <div class="drawer-header">
+      <h3>My Cook Lists</h3>
+      <button class="secondary" onclick="toggleDrawer()">✕</button>
+    </div>
+    <label for="listSearch">Search my lists</label>
+    <input id="listSearch" oninput="loadLists()" placeholder="List name">
+    <div id="cookListsContainer"></div>
+  </aside>
+
+
+  <div class="modal" id="loginModal"><div class="modal-content">
+    <h2>Log in</h2><form onsubmit="handleLogin(event)">
+      <div class="form-group"><label for="loginName">Username</label><input id="loginName" autocomplete="username" required></div>
+      <div class="form-group"><label for="loginPassword">Password</label><input id="loginPassword" type="password" autocomplete="current-password" required></div>
+      <button>Log in</button><button type="button" onclick="closeModal('loginModal');openModal('registerModal')">Create account</button>
+      <button type="button" onclick="closeModal('loginModal')">Cancel</button>
+    </form></div></div>
+  <div class="modal" id="registerModal"><div class="modal-content">
+    <h2>Create account</h2><form onsubmit="handleRegister(event)">
+      <div class="form-group"><label for="registerName">Username</label><input id="registerName" autocomplete="username" required></div>
+      <div class="form-group"><label for="registerPassword">Password</label><input id="registerPassword" type="password" autocomplete="new-password" required></div>
+      <div class="form-group"><label for="registerBio">Bio (optional)</label><textarea id="registerBio"></textarea></div>
+      <button>Register</button><button type="button" onclick="closeModal('registerModal')">Cancel</button>
+    </form></div></div>
+<script>
+// FRONTEND TEACHING TEMPLATE — backend is complete.
+// Only auth, session restoration and saving to a cook list are exercises.
+const BASE_URL = location.protocol === 'file:' ? 'http://localhost:5555' : '';
+let currentUser = null, posts = [], cookLists = [];
+let sessionVersion = 0, recipeRequest = 0, listRequest = 0;
+const el = id => document.getElementById(id);
+// ===============================================================
+// 1. WORKING EXAMPLES — try these with the practice panel
+// These use the SAME real backend/account/session as the app, not fake data.
+// request() below supplies JSON headers, cookies and HTTP error handling.
+// ===============================================================
+async function exampleRegister(event) {
+  event.preventDefault();
+  const username = el('practiceName').value.trim(), password = el('practicePassword').value;
+  if (!username || !password.trim()) return notify('Username and password are required.');
+  try {
+    const data = await request('/register','POST',{username,password,bio:el('practiceBio').value});
+    el('practiceName').value = username; el('practicePassword').value = '';
+     notify(data.message || 'Registered. Please log in.');
+  } catch(error) { notify(error.message); }
+}
+
+async function exampleLogin(event) {
+  event.preventDefault();
+  const username = el('practiceName').value.trim(), password = el('practicePassword').value;
+  if (!username || !password.trim()) return notify('Username and password are required.');
+  try {
+    const data = await request('/login','POST',{username,password});
+    setUser({...data, username:data.username || username}); el('practicePassword').value = '';
+     notify(data.message || 'Logged in.');
+    await Promise.all([loadRecipes(),loadLists()]);
+  } catch(error) { notify(error.message); }
+}
+
+async function exampleLogout() {
+  try {
+    await request('/logout','POST'); resetSession();
+    document.querySelectorAll('.modal').forEach(modal => modal.style.display = 'none');
+    el('cookDrawer').classList.remove('open'); notify('Logged out.');
+  } catch(error) { notify(error.message); }
+}
+
+async function exampleSession() {
+  resetSession();
+  try {
+    const data = await request('/me');
+    if (data.logged_in) { setUser(data); await Promise.all([loadRecipes(),loadLists()]); }
+  } catch(error) { if (error.status !== 401) notify(error.message); }
+}
+
+async function exampleSaveToList(event) {
+  event.preventDefault();
+  const recipe_id=Number(el('practiceRecipe').value), cooklist_name=el('practiceList').value;
+  if (!Number.isInteger(recipe_id) || recipe_id<=0 || !cooklist_name) return notify('Choose a recipe and cook list.');
+  try {
+    await request('/addsavedrecipes','POST',{recipe_id,cooklist_name});  await loadLists(); notify('Recipe saved to cook list.');
+  } catch(error) { notify(error.message); }
+}
+
+// ===============================================================
+// 2. STUDENT EXERCISES — adapt the examples to the app's form IDs
+// ===============================================================
+async function handleRegister(event) {
+  event.preventDefault();
+  // Study exampleRegister() above. The backend /register is already complete.
+  // TODO 1: Read registerName, registerPassword and registerBio; validate input.
+  // TODO 2: POST /register with JSON {username, password, bio} using request().
+  // TODO 3: Only on success clear the password, close registerModal, open loginModal.
+  // TODO 4: Display the server message; catch 400/409/network errors.
+  notify('Exercise: implement registration in handleRegister().');
+}
+
+async function handleLogin(event) {
+  event.preventDefault();
+  // Study exampleLogin(). Read loginName and loginPassword, validate them.
+  // TODO: POST /login with {username,password}. On success call setUser(data),
+  // clear the password, close loginModal, then loadRecipes() and loadLists().
+  // Catch errors; failed login must not mark the user as logged in.
+  notify('Exercise: implement login in handleLogin().');
+}
+
+async function handleLogout() {
+  // Study exampleLogout(). POST /logout; wait for success before resetSession().
+  // TODO: Close open modals/drawer, clear protected content, show the response.
+  // Catch server/network errors; do not pretend logout succeeded on failure.
+  notify('Exercise: implement logout in handleLogout().');
+}
+
+async function checkSession() {
+  resetSession();
+  // Study exampleSession(). This runs when the page loads.
+  // TODO: GET /me; if logged_in, setUser(data), loadRecipes() and loadLists().
+  // A 401 is a normal logged-out state. Display other server/network errors.
+  // Test: login -> refresh -> still logged in; logout -> refresh -> logged out.
+}
+
+async function handleSaveToList(event) {
+  event.preventDefault();
+  // Study exampleSaveToList(). Read targetRecipeId as a number and cookListSelect.
+  // TODO: Validate positive integer recipe_id and a nonempty cooklist_name.
+  // POST /addsavedrecipes with {recipe_id,cooklist_name} using request().
+  // On success close addToListModal, reload lists, notify the user.
+  // Test duplicate saves, missing recipe/list, logged-out and network errors.
+  notify('Exercise: implement saving in handleSaveToList().');
+}
+
+// ===============================================================
+// 3. ALREADY IMPLEMENTED — request helper, recipe/list CRUD and rendering
+// ===============================================================
+function notify(message) { el('notice').textContent = message; }
+function resetSession() {
+  currentUser = null; posts = []; cookLists = []; sessionVersion++;
+  el('userBadge').textContent = 'Not logged in';
+  el('authButton').textContent = 'Log in';
+  el('authButton').onclick = () => openModal('loginModal');
+  el('feed').textContent = 'Log in to view recipes.';
+  el('cookListsContainer').textContent = 'Log in to view your cook lists.';
+}
+function setUser(data) {
+  currentUser = data; sessionVersion++;
+  el('userBadge').textContent = data.username;
+  el('authButton').textContent = 'Log out'; el('authButton').onclick = handleLogout;
+}
+async function request(path, method = 'GET', body) {
+  const options = { method, credentials: 'include' };
+  if (body !== undefined) { options.headers = {'Content-Type':'application/json'}; options.body = JSON.stringify(body); }
+  const res = await fetch(`${BASE_URL}${path}`, options);
+  const data = await res.json();
+  if (!res.ok) {
+    if (res.status === 401 && path !== '/login') resetSession();
+    const error = new Error(data.error || `Request failed (${res.status})`); error.status = res.status; throw error;
+  }
+  return data;
+}
+
+
+
+
+function button(parent,label,handler) {
+  const b=document.createElement('button'); b.className='action-btn'; b.textContent=label; b.onclick=handler; parent.appendChild(b);
+}
+function text(parent,tag,value,className='') {
+  const node=document.createElement(tag); node.className=className; node.textContent=value; parent.appendChild(node); return node;
+}
+async function loadRecipes() {
+  if (!currentUser) return;
+  const version=sessionVersion, sequence=++recipeRequest;
+  try {
+    const rows=await request(`/recipes/search?name=${encodeURIComponent(el('recipeSearch').value)}`);
+    if (version!==sessionVersion || sequence!==recipeRequest) return;
+    posts=rows; renderFeed();
+  } catch(error) { notify(error.message); }
+}
+function renderFeed() {
+  const feed=el('feed'); feed.replaceChildren();
+  if (!posts.length) { feed.textContent='No recipes found. Create one or change the search.'; return; }
+  for (const post of posts) {
+    const card=document.createElement('article'); card.className='post-card';
+    const body=text(card,'div','','post-body');
+    text(body,'h2',post.name,'post-title'); text(body,'small',`Recipe ID: ${post.recipe_id}`); text(body,'p',post.description,'recipe-details');
+    const actions=text(card,'div','','post-actions');
+    button(actions,'Add to List',()=>openAddToListModal(post.recipe_id));
+    if (Number(post.user_id)===Number(currentUser.user_id)) button(actions,'Delete',()=>deleteRecipe(post.recipe_id));
+    feed.appendChild(card);
+  }
+}
+async function loadRandomRecipe() {
+  if (!currentUser) return openModal('loginModal');
+  try { const data=await request('/randomrecipe'); notify(`${data.Name}: ${data.Description}`); }
+  catch(error) { notify(error.message); }
+}
+async function handleCreateRecipe(event) {
+  event.preventDefault();
+  try {
+    await request('/addrecipe','POST',{name:el('createTitle').value.trim(),description:el('createInstructions').value.trim()});
+    closeModal('createModal'); el('createForm').reset(); await loadRecipes(); notify('Recipe created.');
+  } catch(error) { notify(error.message); }
+}
+async function deleteRecipe(recipe_id) {
+  if (!confirm('Delete this recipe?')) return;
+  try { await request('/deleterecipe','DELETE',{recipe_id}); await Promise.all([loadRecipes(),loadLists()]); notify('Recipe deleted.'); }
+  catch(error) { notify(error.message); }
+}
+async function loadLists() {
+  if (!currentUser) return;
+  const version=sessionVersion, sequence=++listRequest;
+  try {
+    const rows=await request(`/cooklists/search?name=${encodeURIComponent(el('listSearch').value)}`);
+    const lists=await Promise.all(rows.map(async list=>({...list, recipes:await request(`/cooklists/${list.cooklist_id}/recipes`)})));
+    if (version!==sessionVersion || sequence!==listRequest) return;
+    cookLists=lists; renderDrawerLists();
+  } catch(error) { notify(error.message); }
+}
+function renderDrawerLists() {
+  const container=el('cookListsContainer'); container.replaceChildren();
+  if (!cookLists.length) { container.textContent='No cook lists found.'; return; }
+  for (const list of cookLists) {
+    const group=text(container,'div','','list-group'); text(group,'h3',list.name,'list-title'); text(group,'p',list.description);
+    button(group,'Delete list',()=>deleteList(list.cooklist_id));
+    if (!list.recipes.length) text(group,'p','No saved recipes.');
+    for (const recipe of list.recipes) {
+      const item=text(group,'div','','cook-item'); text(item,'span',recipe.name);
+      button(item,'Remove',()=>removeFromList(list.cooklist_id,recipe.recipe_id));
+    }
+  }
+}
+async function handleCreateList(event) {
+  event.preventDefault();
+  try {
+    await request('/addCooklist','POST',{name:el('listNameInput').value.trim(),description:el('listDescription').value.trim()});
+    el('listNameInput').value=''; el('listDescription').value=''; closeModal('createListModal'); await loadLists(); notify('Cook list created.');
+  } catch(error) { notify(error.message); }
+}
+async function deleteList(Cooklist_id) {
+  if (!confirm('Delete this cook list? The recipes themselves will be kept.')) return;
+  try { await request('/deleteCooklist','DELETE',{Cooklist_id}); await loadLists(); notify('Cook list deleted.'); }
+  catch(error) { notify(error.message); }
+}
+async function openAddToListModal(recipeId) {
+  if (!currentUser) return openModal('loginModal');
+  try {
+    const rows=await request('/cooklists/search?name='); // All owned lists, regardless of drawer search.
+    if (!rows.length) return notify('Create a cook list first.');
+    el('targetRecipeId').value=recipeId; const select=el('cookListSelect'); select.replaceChildren();
+    for (const list of rows) { const option=document.createElement('option'); option.value=list.name; option.textContent=list.name; select.appendChild(option); }
+    openModal('addToListModal');
+  } catch(error) { notify(error.message); }
+}
+
+async function removeFromList(listId,recipeId) {
+  try { await request(`/cooklists/${listId}/recipes/${recipeId}`,'DELETE'); await loadLists(); notify('Recipe removed from list.'); }
+  catch(error) { notify(error.message); }
+}
+function openModal(id) {
+  if (!currentUser && !['loginModal','registerModal'].includes(id)) id='loginModal';
+  el(id).style.display='flex';
+}
+function closeModal(id) { el(id).style.display='none'; }
+function toggleDrawer() {
+  if (!currentUser) return openModal('loginModal');
+  el('cookDrawer').classList.toggle('open'); loadLists();
+}
+document.querySelectorAll('.modal').forEach(modal=>modal.addEventListener('click',event=>{if(event.target===modal)modal.style.display='none';}));
+window.addEventListener('DOMContentLoaded',checkSession);
+</script>
+</body>
+</html>
